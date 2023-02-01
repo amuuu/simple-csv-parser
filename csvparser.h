@@ -9,6 +9,10 @@
 #include <iostream>
 #include <stack>
 
+
+// todo: handle special cases containing ' and " ; i don't need them at the moment so it's not handled yet
+
+
 namespace CSVParser
 {
 	struct ParserSettings
@@ -21,6 +25,7 @@ namespace CSVParser
 	{
 	public:
 
+		/*template<typename T, typename...TRest>*/
 		void Parse(const std::string& dir, const ParserSettings& settings = {})
 		{
 			std::ifstream fstream{};
@@ -37,16 +42,23 @@ namespace CSVParser
 				std::cout << std::endl << line << std::endl;
 
 				AnalyzeLine(line, settings.numColumns);
-
 			}
 
-			fstream.close();
+			/*if constexpr (sizeof...(rest) > 0)
+			{
+				args->next = new Args{};
+				::PackArgs(args->next, rest...);
+			}
+			else
+			{
+				fstream.close();
+			}*/
 		}
 
 	private:
+
 		void ExtractTokens(std::string& l, const unsigned int& cols)
 		{
-			
 			std::vector<std::string> result{};
 			std::stringstream ss{ l };
 			std::string item{};
@@ -60,27 +72,10 @@ namespace CSVParser
 				std::cout << "t: " << t << std::endl;
 		}
 
-		void PreprocessLine(std::string& l, const unsigned int& cols)
-		{
-			for(int c = 0; c < l.size(); c++)
-			{
-				if (l[c] == '\'')
-				{
-					bool nextSQ = ((c + 1 <= l.size() - 1) && l[c + 1] == '\'');
-					bool prevSQ = ((c - 1 >= 0) && l[c - 1] == '\'');
-
-					if (!nextSQ && !prevSQ)
-					{
-						l[c] = '@';
-					}
-				}
-			}
-		}
-
 		void AnalyzeLine(std::string& l, const unsigned int& cols)
 		{
-			PreprocessLine(l, cols);
 			ExtractTokens(l, cols);
 		}
+
 	};
 }
