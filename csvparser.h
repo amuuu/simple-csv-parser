@@ -29,6 +29,7 @@ namespace CSVParser
 
 		unsigned int numColumns{ 0 };
 		unsigned int ignoredFirstRowsCount{ 0 };
+		bool parseHarshly{ false };
 		
 		template<typename TargetType>
 		void SetConvertorMethod(std::function<TargetType(const std::string&)> convertor)
@@ -84,11 +85,10 @@ namespace CSVParser
 	{
 	public:
 
-		// tuples need a bit of work as a solution in this case i think
-		// using Data = std::tuple<T, TRest...>;
+		using RowData = std::tuple<T, TRest...>;
 		// template <std::size_t N>
-		// using DataIndex = typename std::tuple_element<N, Data>::type;
-		using RowData = std::map<unsigned int, std::any>;
+		// using DataIndex = typename std::tuple_element<N, RowData>::type;
+		using RowDataDict = std::map<unsigned int, std::any>;
 
 		Parser(const std::string& dir, const ParserSettings& settings)
 		{
@@ -110,37 +110,50 @@ namespace CSVParser
 					continue;
 
 				std::cout << "line -> " << line << std::endl;
-
-				auto tokens = AnalyzeRow(line, settings.numColumns);
 				
-				RowData thisRowData{};
+				RowDataDict thisRowData{};
+				
+				auto tokens = AnalyzeRow(line, settings.numColumns);
 				ConvertTypes<T, TRest...>(tokens, thisRowData, 0);
+				
 				datas.push_back(thisRowData);
+				rowCount++;
 			}
 
 			fstream.close();
 		}
-
-		template<typename TargetType>
-		TargetType GetRowData(int row, int col)
+		
+		template<typename _T, typename..._TRest>
+		void GetRowData(int row, _T& arg, _TRest&...rest)
 		{
-			if (datas[row].find(col) != datas[row].end())
+			if (datas[row].find(currentIteratingColIndex) != datas[row].end())
+				arg = std::any_cast<_T>(datas[row][currentIteratingColIndex]);
+			else
+				arg = _T{};
+
+			if constexpr (sizeof...(rest) > 0)
 			{
-				return std::any_cast<TargetType>(datas[row][col]);
+				currentIteratingColIndex++;
+				GetRowData(row, rest...);
 			}
 			else
 			{
-				std::cout << std::endl << "ERROR: row and col with the following type doesn't exist:\n" << typeid(TargetType).name() << std::endl;
-				exit(-1);
+				currentIteratingColIndex = 0;
 			}
 		}
 
+		const int GetRowCount() const { return rowCount; }
 
 	private:
 
 		ParserSettings settings{};
-		std::vector<RowData> datas{};
+		std::vector<RowDataDict> datas{};
 		std::string dir{};
+		int rowCount{ 0 };
+		
+		//dirt
+		int currentIteratingColIndex{ 0 };
+
 
 		std::queue<std::string> AnalyzeRow(std::string& l, const unsigned int& cols)
 		{
@@ -158,7 +171,7 @@ namespace CSVParser
 		}
 
 		template<typename _T, typename..._TRest>
-		void ConvertTypes(std::queue<std::string>& tokens, RowData& data, unsigned int currentCol = 0)
+		void ConvertTypes(std::queue<std::string>& tokens, RowDataDict& data, unsigned int currentCol = 0)
 		{
 			auto& target = tokens.front();
 
