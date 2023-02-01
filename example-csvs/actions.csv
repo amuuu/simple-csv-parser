@@ -1,0 +1,6 @@
+name,min_score,variables_name,variables_coeff,variables_min,variables_max,rewards_name,rewards_absolute,rewards_diff
+MakePasta,20,hunger,1,50,,hunger,0,
+,,morale,1,50,,morale,,15
+,,energy,1,50,,energy,,-10
+,,cooking,2,12,,,,
+,,money,5,20,,,,

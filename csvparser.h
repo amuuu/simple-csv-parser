@@ -6,8 +6,11 @@
 #include <sstream>
 #include <queue>
 #include <typeinfo>
-
+#include <functional>
+#include<map>
 #include <iostream>
+#include <variant>
+#include <any>
 
 
 // todo: handle special cases containing ' and " ; i don't need them at the moment so it's not handled yet
@@ -16,10 +19,27 @@
 
 namespace CSVParser
 {
+
+	static std::string EMPTY_STRING{ "" };
+
 	struct ParserSettings
 	{
 		unsigned int numColumns;
 		unsigned int ignoredFirstRowsCount{ 0 };
+		
+		/*template<typename TargetType>
+		void SetConvertorMethodForType(std::function<TargetType(const std::string&)> convertor)
+		{
+			this->convertor = convertor;
+		}
+
+		template<typename TargetType>
+		TargetType CallConvertorMethodForType(const std::string& token)
+		{
+			return convertor();
+		}
+
+		std::any convertor;*/
 	};
 
 	class Parser
@@ -47,7 +67,6 @@ namespace CSVParser
 			}
 
 			fstream.close();
-			
 		}
 
 	private:
@@ -60,7 +79,7 @@ namespace CSVParser
 
 			while (std::getline(ss, item, ','))
 			{
-				std::cout << "t: " << item << std::endl;
+				//std::cout << "t: " << item << std::endl;
 				result.push(item);
 			}	
 
@@ -72,10 +91,13 @@ namespace CSVParser
 		{
 			auto& target = tokens.front();
 
-			std::cout << "CURRENT TARGET: \"" << target << "\"\n";
-			
-			if (target != "")
+			if (target != EMPTY_STRING)
 			{
+				
+				/*settings.CallConvertorMethodForType<T>(target);*/
+				
+				// todo: generalize
+
 				if (typeid(T) == typeid(int))
 				{
 					std::cout << "int: " << std::stoi(target) << std::endl;

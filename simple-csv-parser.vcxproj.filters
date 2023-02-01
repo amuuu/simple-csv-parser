@@ -26,5 +26,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="example-csvs\simple.csv" />
+    <None Include="example-csvs\actions.csv" />
   </ItemGroup>
 </Project>
