@@ -42,11 +42,16 @@ namespace CSVParser
 		std::any convertor;*/
 	};
 
+	template<typename T, typename...TRest>
 	class Parser
 	{
 	public:
 
-		template<typename T, typename...TRest>
+		struct Data
+		{
+
+		};
+
 		void Parse(const std::string& dir, const ParserSettings& settings = {})
 		{
 			std::ifstream fstream{};
@@ -86,27 +91,26 @@ namespace CSVParser
 			return result;
 		}
 
-		template<typename T, typename...TRest>
+		template<typename _T, typename..._TRest>
 		void ConvertTypes(std::queue<std::string>& tokens)
 		{
 			auto& target = tokens.front();
 
 			if (target != EMPTY_STRING)
 			{
-				
 				/*settings.CallConvertorMethodForType<T>(target);*/
 				
 				// todo: generalize
 
-				if (typeid(T) == typeid(int))
+				if (typeid(_T) == typeid(int))
 				{
 					std::cout << "int: " << std::stoi(target) << std::endl;
 				}
-				else if (typeid(T) == typeid(float))
+				else if (typeid(_T) == typeid(float))
 				{
 					std::cout << "float: " << std::stof(target) << std::endl;
 				}
-				else if (typeid(T) == typeid(std::string))
+				else if (typeid(_T) == typeid(std::string))
 				{
 					std::cout << "string: " << target << std::endl;
 				}
@@ -116,12 +120,12 @@ namespace CSVParser
 				}
 			}
 
-			if constexpr (sizeof...(TRest) > 0)
+			if constexpr (sizeof...(_TRest) > 0)
 			{
 				tokens.pop();
 				
 				if (!tokens.empty())
-					ConvertTypes<TRest...>(tokens);
+					ConvertTypes<_TRest...>(tokens);
 			}
 		}
 
