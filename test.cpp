@@ -12,5 +12,5 @@ int main()
 	settings.ignoredFirstRowsCount = 2;
 	settings.ignoredFirstRowsCount = 2;
 
-	parser.Parse("example-csvs/simple.csv", settings);
+	parser.Parse<std::string, int>("example-csvs/simple.csv", settings);
 }
