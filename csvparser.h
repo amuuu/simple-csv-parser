@@ -9,9 +9,9 @@
 #include <functional>
 #include <map>
 #include <iostream>
-#include <variant>
 #include <any>
 #include <utility>
+#include <type_traits>
 
 // todo: handle special cases containing ' and " ; i don't need them at the moment so it's not handled yet
 // todo: support utf-8
@@ -24,6 +24,8 @@ namespace CSVParser
 
 	struct ParserSettings
 	{
+	public:
+
 		unsigned int numColumns{ 0 };
 		unsigned int ignoredFirstRowsCount{ 0 };
 		
@@ -40,12 +42,39 @@ namespace CSVParser
 
 			for (const auto& convertor : convertors)
 			{
-				if (convertor.type() == typeid(CType)) 
+				if (convertor.type() == typeid(CType))
+				{
 					return std::any_cast<CType>(convertor)(token);
+				}
 			}
+
+			return CallDefaultConvertorMethod<TargetType>(token);
 		}
 
 	private:
+
+		template<typename TargetType>
+		static inline TargetType CallDefaultConvertorMethod(const std::string& token)
+		{
+			//const auto targetTypeID = typeid(TargetType);
+
+			if constexpr (std::is_same_v<TargetType, int>)
+			{
+				return std::stoi(token);
+			}
+			else if constexpr (std::is_same_v<TargetType, float>)
+			{
+				return std::stof(token);
+			}
+			else if constexpr (std::is_same_v<TargetType, std::string>)
+			{
+				return token;
+			}
+			else
+			{
+				std::cout << "No default convertor found for type of " << typeid(TargetType).name() << std::endl;
+			}
+		}
 
 		std::vector<std::any> convertors{};
 	};

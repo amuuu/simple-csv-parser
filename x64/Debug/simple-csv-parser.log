@@ -1,4 +1,2 @@
 ﻿  test.cpp
-D:\Software Projects\simple-csv-parser\csvparser.h(46): warning C4715: 'CSVParser::ParserSettings::CallConvertorMethod<std::basic_string<char,std::char_traits<char>,std::allocator<char> > >': not all control paths return a value
-D:\Software Projects\simple-csv-parser\csvparser.h(46): warning C4715: 'CSVParser::ParserSettings::CallConvertorMethod<int>': not all control paths return a value
   simple-csv-parser.vcxproj -> D:\Software Projects\simple-csv-parser\x64\Debug\simple-csv-parser.exe
