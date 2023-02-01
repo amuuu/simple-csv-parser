@@ -15,17 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="example.cpp">
+    <ClCompile Include="Source\example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="csvparser.h">
+    <ClInclude Include="Source\csvparser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="example-csvs\simple.csv" />
-    <None Include="example-csvs\actions.csv" />
+    <None Include="Source\simple.csv" />
+    <None Include="Source\actions.csv" />
   </ItemGroup>
 </Project>

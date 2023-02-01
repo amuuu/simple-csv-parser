@@ -137,14 +137,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="example.cpp" />
+    <ClCompile Include="Source\example.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="csvparser.h" />
+    <ClInclude Include="Source\csvparser.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="example-csvs\actions.csv" />
-    <None Include="example-csvs\simple.csv" />
+    <None Include="Source\actions.csv" />
+    <None Include="Source\simple.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

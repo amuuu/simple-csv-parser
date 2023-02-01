@@ -15,7 +15,7 @@ int main()
 		settings.SetConvertorMethod<float>([](const std::string& token) { return std::stof(token); });
 		settings.SetConvertorMethod<std::string>([](const std::string& token) { return token; });
 
-		Parser<std::string, int> parser{ "example-csvs/simple.csv", settings };
+		Parser<std::string, int> parser{ "Source/simple.csv", settings };
 		parser.Parse();
 
 		std::string a{};
@@ -36,7 +36,7 @@ int main()
 		ParserSettings settings{};
 		settings.ignoredFirstRowsCount = 1;
 		
-		parser.Parse("example-csvs/actions.csv", settings);
+		parser.Parse("Source/actions.csv", settings);
 	}
 	*/
 }
