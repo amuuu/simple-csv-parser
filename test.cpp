@@ -17,6 +17,8 @@ int main()
 
 		Parser<std::string, int> parser{ "example-csvs/simple.csv", settings };
 		parser.Parse();
+
+		std::cout << parser.GetRowData<std::string>(2, 0) << std::endl;
 	}
 	//*/
 

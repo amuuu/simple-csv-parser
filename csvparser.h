@@ -12,6 +12,7 @@
 #include <any>
 #include <utility>
 #include <type_traits>
+#include <cassert>
 
 // todo: handle special cases containing ' and " ; i don't need them at the moment so it's not handled yet
 // todo: support utf-8
@@ -56,8 +57,6 @@ namespace CSVParser
 		template<typename TargetType>
 		static inline TargetType CallDefaultConvertorMethod(const std::string& token)
 		{
-			//const auto targetTypeID = typeid(TargetType);
-
 			if constexpr (std::is_same_v<TargetType, int>)
 			{
 				return std::stoi(token);
@@ -72,7 +71,8 @@ namespace CSVParser
 			}
 			else
 			{
-				std::cout << "No default convertor found for type of " << typeid(TargetType).name() << std::endl;
+				std::cout << "No default convertor for the type of " << typeid(TargetType).name << std::endl;
+				exit(-1);
 			}
 		}
 
@@ -84,11 +84,12 @@ namespace CSVParser
 	{
 	public:
 
-		using Data = std::tuple<T, TRest...>;
-		
-		template <std::size_t N>
-		using DataIndex = typename std::tuple_element<N, Data>::type;
-		
+		// tuples need a bit of work as a solution in this case i think
+		// using Data = std::tuple<T, TRest...>;
+		// template <std::size_t N>
+		// using DataIndex = typename std::tuple_element<N, Data>::type;
+		using RowData = std::map<unsigned int, std::any>;
+
 		Parser(const std::string& dir, const ParserSettings& settings)
 		{
 			this->dir = dir;
@@ -108,27 +109,40 @@ namespace CSVParser
 				if (settings.ignoredFirstRowsCount > rowCounter++)
 					continue;
 
-				std::cout << std::endl << line << std::endl;
+				std::cout << "line -> " << line << std::endl;
 
-				auto tokens = AnalyzeLine(line, settings.numColumns);
+				auto tokens = AnalyzeRow(line, settings.numColumns);
 				
-				Data thisLineData{};
-				std::size_t index{ 0 };
-				ConvertTypes<T, TRest...>(tokens, thisLineData, index); // todo: save converted data somehow using tuple or std::any
-				//datas.push_back(thisLineData);
+				RowData thisRowData{};
+				ConvertTypes<T, TRest...>(tokens, thisRowData, 0);
+				datas.push_back(thisRowData);
 			}
 
 			fstream.close();
+		}
+
+		template<typename TargetType>
+		TargetType GetRowData(int row, int col)
+		{
+			if (datas[row].find(col) != datas[row].end())
+			{
+				return std::any_cast<TargetType>(datas[row][col]);
+			}
+			else
+			{
+				std::cout << std::endl << "ERROR: row and col with the following type doesn't exist:\n" << typeid(TargetType).name() << std::endl;
+				exit(-1);
+			}
 		}
 
 
 	private:
 
 		ParserSettings settings{};
-		std::vector<Data> datas{};
+		std::vector<RowData> datas{};
 		std::string dir{};
 
-		std::queue<std::string> AnalyzeLine(std::string& l, const unsigned int& cols)
+		std::queue<std::string> AnalyzeRow(std::string& l, const unsigned int& cols)
 		{
 			std::queue<std::string> result{};
 			std::stringstream ss{ l };
@@ -144,13 +158,13 @@ namespace CSVParser
 		}
 
 		template<typename _T, typename..._TRest>
-		void ConvertTypes(std::queue<std::string>& tokens, Data& data, std::size_t index)
+		void ConvertTypes(std::queue<std::string>& tokens, RowData& data, unsigned int currentCol = 0)
 		{
 			auto& target = tokens.front();
 
 			if (target != EMPTY_STRING)
 			{
-				std::cout << settings.CallConvertorMethod<_T>(target);
+				data[currentCol] = settings.CallConvertorMethod<_T>(target);
 			}
 
 			if constexpr (sizeof...(_TRest) > 0)
@@ -158,7 +172,7 @@ namespace CSVParser
 				tokens.pop();
 				
 				if (!tokens.empty())
-					ConvertTypes<_TRest...>(tokens, data, index+1);
+					ConvertTypes<_TRest...>(tokens, data, currentCol + 1);
 			}
 		}
 
