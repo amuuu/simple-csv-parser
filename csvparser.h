@@ -48,7 +48,7 @@ namespace CSVParser
 				}
 			}
 
-			return CallDefaultConvertorMethod<TargetType>(token);
+			return ParserSettings::CallDefaultConvertorMethod<TargetType>(token);
 		}
 
 	private:
