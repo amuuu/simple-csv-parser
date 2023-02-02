@@ -6,8 +6,6 @@ using namespace CSVParser;
 
 int main()
 {
-	
-	///*
 	{
 		ParserSettings settings{};
 		settings.ignoredFirstRowsCount = 2;
@@ -29,7 +27,6 @@ int main()
 		}
 	}
 
-	
 	{
 		ParserSettings settings{};
 		settings.ignoredFirstRowsCount = 1;

@@ -14,10 +14,6 @@
 #include <type_traits>
 #include <cassert>
 
-// todo: handle special cases containing ' and " ; i don't need them at the moment so it's not handled yet
-// todo: support utf-8
-
-
 namespace CSVParser
 {
 
@@ -109,8 +105,6 @@ namespace CSVParser
 				if (settings.ignoredFirstRowsCount > rowCounter++)
 					continue;
 
-				std::cout << "line -> " << line << std::endl;
-				
 				RowDataDict thisRowData{};
 				
 				auto tokens = AnalyzeRow(line, settings.numColumns);
@@ -150,8 +144,6 @@ namespace CSVParser
 		std::vector<RowDataDict> datas{};
 		std::string dir{};
 		int rowCount{ 0 };
-		
-		//dirt
 		int currentIteratingColIndex{ 0 };
 
 
@@ -163,7 +155,6 @@ namespace CSVParser
 
 			while (std::getline(ss, item, ','))
 			{
-				//std::cout << "t: " << item << std::endl;
 				result.push(item);
 			}	
 
